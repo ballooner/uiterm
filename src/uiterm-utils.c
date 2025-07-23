@@ -2,12 +2,14 @@
 #include <termios.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 terminal_settings_t terminalSettings;
 
-void enterRawMode(void)
+int enterRawMode(void)
 {
-	tcgetattr(STDIN_FILENO, &terminalSettings.defaultSettings);
+	if (tcgetattr(STDIN_FILENO, &terminalSettings.defaultSettings) == -1)
+		return -1;
 	struct termios newSettings = terminalSettings.defaultSettings;
 
 	newSettings.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP
@@ -19,21 +21,41 @@ void enterRawMode(void)
 
 	terminalSettings.currentSettings = newSettings;
 
-	tcsetattr(STDIN_FILENO, TCSAFLUSH, &terminalSettings.currentSettings);
-	clearScreen();
+	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &terminalSettings.currentSettings) == -1)
+		return -1;
+	if (clearScreen() == -1)
+		return -1;
 
-	atexit(leaveRawMode);
+	atexit((void (*)(void))leaveRawMode);
+
+	return 0;
 }
 
-void leaveRawMode()
+int leaveRawMode(void)
 {
-	clearScreen();
-	tcsetattr(STDIN_FILENO, TCSAFLUSH, &terminalSettings.defaultSettings);
+	if (clearScreen() == -1)
+		return -1;
+	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &terminalSettings.defaultSettings) == -1)
+		return -1;
+
+	return 0;
 }
 
-void clearScreen(void)
+int clearScreen(void)
 {
-	write(STDIN_FILENO, "\x1b[1J", 4);
+	if (write(STDIN_FILENO, "\x1b[1J", 4) == -1)
+		return -1;
+
+	return 0;
 }
 
-void moveCursor(int x, int y);
+int moveCursor(int x, int y)
+{
+	char buffer[64];
+
+	int bytesWritten = snprintf(buffer, 64, "\x1b[%d;%dJ", y, x);
+	if (bytesWritten < 0)
+		return -1;
+
+	return bytesWritten;
+}
