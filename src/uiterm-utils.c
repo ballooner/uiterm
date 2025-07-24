@@ -59,3 +59,45 @@ int moveCursor(int x, int y)
 
 	return bytesWritten;
 }
+
+int drawCharacter(int x, int y, char c)
+{
+
+
+	return 0;
+}
+
+int changeBackgroundColor(int r, int g, int b)
+{
+
+
+	return 0;
+}
+
+int changeCellColor(int r, int g, int b)
+{
+
+
+	return 0;
+}
+
+int changeTextColor(int r, int g, int b)
+{
+
+
+	return 0;
+}
+
+int getCursorPosition(int* x, int *y)
+{
+
+
+	return 0;
+}
+
+int getTerminalSize(int* width, int* height)
+{
+
+
+	return 0;
+}
