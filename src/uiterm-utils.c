@@ -43,7 +43,7 @@ int leaveRawMode(void)
 
 int clearScreen(void)
 {
-	if (write(STDIN_FILENO, "\x1b[1J", 4) == -1)
+	if (write(STDOUT_FILENO, "\x1b[1J", 4) == -1)
 		return -1;
 
 	return 0;
@@ -53,8 +53,12 @@ int moveCursor(int x, int y)
 {
 	char buffer[64];
 
-	int bytesWritten = snprintf(buffer, 64, "\x1b[%d;%dJ", y, x);
+	int bytesWritten = snprintf(buffer, 64, "\x1b[%d;%dH", y, x);
 	if (bytesWritten < 0)
+		return -1;
+
+	int returnCode = write(STDOUT_FILENO, buffer, bytesWritten);
+	if (returnCode < 0)
 		return -1;
 
 	return bytesWritten;
@@ -62,14 +66,25 @@ int moveCursor(int x, int y)
 
 int drawCharacter(int x, int y, char c)
 {
+	if (moveCursor(x, y) == -1)
+		return -1;
 
+	putchar(c);
 
 	return 0;
 }
 
 int changeBackgroundColor(int r, int g, int b)
 {
+	char buffer[64];
 
+	int bytesWritten = snprintf(buffer, 64, "\x1b[38;2;%d;%d;%dm", r, g, b);
+	if (bytesWritten < 0)
+		return -1;
+
+	int returnCode = write(STDOUT_FILENO, buffer, bytesWritten);
+	if (returnCode < 0)
+		return -1;
 
 	return 0;
 }

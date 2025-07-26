@@ -1,12 +1,13 @@
 #include "uiterm-utils.h"
+#include <stdio.h>
+#include <unistd.h>
 
 int main(void)
 {
 	enterRawMode();
 
-	moveCursor(10, 10);
-
-	while (1);
+	char c;
+	while ((c = getchar()) != 'q');
 
 	return 0;
 }
