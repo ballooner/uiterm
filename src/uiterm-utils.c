@@ -3,6 +3,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <sys/ioctl.h>
+
 
 terminal_settings_t terminalSettings;
 
@@ -45,15 +47,17 @@ int clearScreen(void)
 {
 	if (write(STDOUT_FILENO, "\x1b[1J", 4) == -1)
 		return -1;
+	if (moveCursor(0, 0) < 0)
+		return -1;
 
 	return 0;
 }
 
 int moveCursor(int x, int y)
 {
-	char buffer[64];
+	char buffer[BUFFER_SIZE];
 
-	int bytesWritten = snprintf(buffer, 64, "\x1b[%d;%dH", y, x);
+	int bytesWritten = snprintf(buffer, BUFFER_SIZE, "\x1b[%d;%dH", y, x);
 	if (bytesWritten < 0)
 		return -1;
 
@@ -74,45 +78,40 @@ int drawCharacter(int x, int y, char c)
 	return 0;
 }
 
-int changeBackgroundColor(int r, int g, int b)
-{
-	char buffer[64];
-
-	int bytesWritten = snprintf(buffer, 64, "\x1b[38;2;%d;%d;%dm", r, g, b);
-	if (bytesWritten < 0)
-		return -1;
-
-	int returnCode = write(STDOUT_FILENO, buffer, bytesWritten);
-	if (returnCode < 0)
-		return -1;
-
-	return 0;
-}
-
-int changeCellColor(int r, int g, int b)
-{
-
-
-	return 0;
-}
-
-int changeTextColor(int r, int g, int b)
-{
-
-
-	return 0;
-}
-
 int getCursorPosition(int* x, int *y)
 {
+	if (write(STDOUT_FILENO, "\x1b[6n", 4) < 0)
+		return -1;
 
+	char buffer[BUFFER_SIZE];
+
+	read(STDIN_FILENO, &buffer[0], 1);
+
+	int i = 1;
+	while (i < BUFFER_SIZE && buffer[i - 1] != 'R')
+	{
+		read(STDIN_FILENO, &buffer[i++], 1);
+	}
+
+	if (i < BUFFER_SIZE)
+		buffer[i] = '\0';
+
+	if (buffer[0] != '\x1b' && buffer[1] != '[')
+		return -1;
+
+	sscanf(&buffer[2], "%d;%dR", y, x);
 
 	return 0;
 }
 
 int getTerminalSize(int* width, int* height)
 {
+	struct winsize ws;
 
+	ioctl(STDIN_FILENO, TIOCGWINSZ, &ws);
+
+	*width = ws.ws_row;
+	*height = ws.ws_col;
 
 	return 0;
 }

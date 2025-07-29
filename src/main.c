@@ -7,7 +7,10 @@ int main(void)
 	enterRawMode();
 
 	char c;
-	while ((c = getchar()) != 'q');
+	while ((c = getchar()) != 'q')
+	{
+		putchar(c);
+	}
 
 	return 0;
 }

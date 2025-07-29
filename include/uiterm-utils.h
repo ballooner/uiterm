@@ -3,6 +3,8 @@
 
 #include <termios.h>
 
+#define BUFFER_SIZE 128
+
 typedef struct TerminalSettings
 {
 	struct termios defaultSettings;
@@ -29,15 +31,6 @@ int moveCursor(int x, int y);
 // Draw character at position x,y
 // Return -1 on failure
 int drawCharacter(int x, int y, char c);
-// ONLY WORKS IF YOUR TERMINAL SUPPORTS TRUE COLOR
-// Sets the terminal background color to the provided (r,g,b) value
-int changeBackgroundColor(int r, int g, int b);
-// ONLY WORKS IF YOUR TERMINAL SUPPORTS TRUE COLOR
-// Sets the cell background color to the provided (r,g,b) value
-int changeCellColor(int r, int g, int b);
-// ONLY WORKS IF YOUR TERMINAL SUPPORTS TRUE COLOR
-// Sets the text color to the provided (r,g,b) value
-int changeTextColor(int r, int g, int b);
 // Return the current cursor position into the variables provided
 int getCursorPosition(int* x, int *y);
 // Return the current terminal size in the variables provided
