@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <sys/ioctl.h>
 
-
 terminal_settings_t terminalSettings;
 
 int enterRawMode(void)
