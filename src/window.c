@@ -1,10 +1,12 @@
 #include "window.h"
+#include "uiterm-utils.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 window_t* createWindow(int height, int width)
 {
 	window_t* newWindow = malloc(sizeof(window_t));
-	char** windowContent = malloc(height * width * sizeof(char));
+	char* windowContent = malloc(height * width * sizeof(char));
 
 	// Window setup
 	newWindow->height = height;
@@ -16,21 +18,30 @@ window_t* createWindow(int height, int width)
 	{
 		for (int j = 0; j < width; j++)
 		{
-			if ((i == 0 || i == height) || (j == 0 || j == width))
-			{
-				windowContent[height][width] = 
-			} else
-			{
-				windowContent[height][width] = ' ';
-			}
+			*(windowContent + (height * i + j)) = ' ';
 		}
 	}
 
 	// Temp setup
 	newWindow->id = 0;
 	newWindow->isActive = true;
+	newWindow->posX = 1;
+	newWindow->posY = 1;
 
 	return newWindow;
 }
-void deleteWindow(window_t* window);
-void renderWindow(window_t* window);
+
+void deleteWindow(window_t* window)
+{
+	free(window->content);
+	free(window);
+}
+
+void renderWindow(window_t* window)
+{
+	for (int i = 0; i < window->height; i++)
+	{
+		moveCursor(window->posX, window->posY + i);
+		putchar('|');
+	}
+}

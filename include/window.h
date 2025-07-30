@@ -12,7 +12,7 @@ typedef struct WindowInfo
 	int posX;
 	int posY;
 	bool isActive;
-	char** content;
+	char* content;
 } window_t;
 
 window_t* createWindow(int height, int width);
