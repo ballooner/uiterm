@@ -15,7 +15,7 @@ typedef struct WindowInfo
 	char* content;
 } window_t;
 
-window_t* createWindow(int height, int width);
+window_t* createWindow(int height, int width, int x, int y);
 void deleteWindow(window_t* window);
 void renderWindow(window_t* window);
 

@@ -7,16 +7,11 @@ int main(void)
 {
 	enterRawMode();
 
-	//window_t* mainWindow = createWindow(20, 20);
-	//renderWindow(mainWindow);
-	
-	moveCursor(5, 10);
+	window_t* mainWindow = createWindow(10, 5, 10, 10);
+	renderWindow(mainWindow);
 
 	char c;
-	while ((c = getchar()) != 'q')
-	{
-		putchar(c);
-	}
+	while ((c = getchar()) != 'q');
 
 	return 0;
 }
